@@ -43,7 +43,7 @@ func main(){
 	r.HandleFunc("/", showIndexPage).Methods("GET")
 	r.HandleFunc("/create/account/{userName}/{businessName}/{password}/{city}", createAccount).Methods("POST")
 	r.HandleFunc("/create/profile/{userID}/{plan}", createProfile).Methods("POST")
-	//r.HandleFunc("/login/{userName}/{password}", loginAccount).Methods("POST")
+	r.HandleFunc("/login/{userName}/{password}", loginAccount).Methods("POST")
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -87,6 +87,18 @@ func createProfile(w http.ResponseWriter, r *http.Request){
 			userConfig:=shashankMongo.FetchProfile(connectDBInfo,vars["userID"])
 			templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 		}
+	}
+}
+
+func loginAccount(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	username:=vars["userName"]
+	password:=vars["password"]
+	userConfig,err := shashankMongo.FetchLogin(connectDBInfo,username,password)
+	if err!=nil {
+		templates.ExecuteTemplate(w, "index.gohtml", nil)	
+	}else{
+	templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 	}
 }
 
