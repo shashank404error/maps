@@ -44,7 +44,8 @@ func main(){
 	r.HandleFunc("/create/account/{userName}/{businessName}/{password}/{city}", createAccount).Methods("POST")
 	r.HandleFunc("/create/profile/{userID}/{plan}", createProfile).Methods("POST")
 	r.HandleFunc("/login/{userName}/{password}", loginAccount).Methods("POST")
-	r.HandleFunc("/zones/{userID}", getZoneInfo).Methods("POST")
+	r.HandleFunc("/overview/{userID}", loadOverview).Methods("POST")
+	r.HandleFunc("/zones/{userID}", loadZone).Methods("POST")
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -102,10 +103,16 @@ func loginAccount(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func getZoneInfo(w http.ResponseWriter, r *http.Request) {
+func loadZone(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	account:=shashankMongo.GetZone(connectDBInfo,"parking",vars["userID"])
 	templates.ExecuteTemplate(w, "zone.gohtml", account)
+}
+
+func loadOverview(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",vars["userID"])
+	templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 }
 
 func byteToJsonInterface(load string) map[string]interface{} {

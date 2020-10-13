@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+button {outline:none;}
+
 </style>
 <body class="w3-light-grey">
 
@@ -36,7 +38,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </div>
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</a>
+    <form method="POST" action="/overview/{{ .UserID }}">
+    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</button>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  New Assignment</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Live Tracking</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Profile</a>
@@ -65,11 +68,16 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <div class="w3-rest">
         <h5>Zone Overview</h5>
         <table class="w3-table w3-striped w3-white">
+        <tr>
+            <th></th>
+            <th>ZoneID</th>
+            <th>Delivery Pending</th>
+        </tr>
         {{ range .ZoneDetailInfo }}
           <tr>
             <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
             <td>{{ .Name }}</td>
-            <td><i>10 mins</i></td>
+            <td>{{ .DeliveryInZone }}</td>
           </tr>
         {{ end }}
         </table>
