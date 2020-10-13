@@ -11,14 +11,14 @@ import (
 	"github.com/gorilla/mux"
 	//"github.com/shashank404error/account"
 	"github.com/shashank404error/shashankMongo"
+	"github.com/shashank404error/middlework"
 	"html/template"
 	"os"
 )
 
 var connectDBInfo *shashankMongo.ConnectToDataBase = &shashankMongo.ConnectToDataBase{
 	CustomApplyURI:"mongodb://shashank404error:Y9ivXgMQ5ZrjL4N@parkpoint-shard-00-00.0bxqn.mongodb.net:27017,parkpoint-shard-00-01.0bxqn.mongodb.net:27017,parkpoint-shard-00-02.0bxqn.mongodb.net:27017/parkpoint?ssl=true&replicaSet=atlas-21pobg-shard-0&authSource=admin&retryWrites=true&w=majority", 
-	DatabaseName:"parkpoint", 
-	CollectionName:"businessAccounts", 
+	DatabaseName:"parkpoint",  
 }
 
 var templates *template.Template
@@ -44,6 +44,7 @@ func main(){
 	r.HandleFunc("/create/account/{userName}/{businessName}/{password}/{city}", createAccount).Methods("POST")
 	r.HandleFunc("/create/profile/{userID}/{plan}", createProfile).Methods("POST")
 	r.HandleFunc("/login/{userName}/{password}", loginAccount).Methods("POST")
+	r.HandleFunc("/zones/{userID}", getZoneInfo).Methods("POST")
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -68,7 +69,7 @@ func createAccount(w http.ResponseWriter, r *http.Request){
 
 	loadToJson:=byteToJsonInterface(load)
 	
-	id:=shashankMongo.InsertOne(connectDBInfo,loadToJson)
+	id:=shashankMongo.InsertOne(connectDBInfo,"businessAccounts",loadToJson)
 	templates.ExecuteTemplate(w, "selectPlan.gohtml", id)
 }
 
@@ -77,14 +78,13 @@ func createProfile(w http.ResponseWriter, r *http.Request){
 	key:="businessplan"
 	value:=vars["plan"]
 
-	res:=shashankMongo.UpdateOneByID(connectDBInfo,vars["userID"],key,value)
+	res:=shashankMongo.UpdateOneByID(connectDBInfo,"businessAccounts",vars["userID"],key,value)
 	if(res==1){
-		connectDBInfo.CollectionName = "profileConfig"
-		config:=shashankMongo.FetchProfileConfiguration(connectDBInfo,value)
-		connectDBInfo.CollectionName = "businessAccounts"
-		profileRes := shashankMongo.UpdateProfileConfiguration(connectDBInfo,vars["userID"],config)
+		config:=shashankMongo.FetchProfileConfiguration(connectDBInfo,"profileConfig",value)
+		profileRes := shashankMongo.UpdateProfileConfiguration(connectDBInfo,"businessAccounts",vars["userID"],config)
+		middlework.CreateZones(connectDBInfo,"parking",vars["userID"],config)
 		if(profileRes==1) {
-			userConfig:=shashankMongo.FetchProfile(connectDBInfo,vars["userID"])
+			userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",vars["userID"])
 			templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 		}
 	}
@@ -94,12 +94,18 @@ func loginAccount(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	username:=vars["userName"]
 	password:=vars["password"]
-	userConfig,err := shashankMongo.FetchLogin(connectDBInfo,username,password)
+	userConfig,err := shashankMongo.FetchLogin(connectDBInfo,"businessAccounts",username,password)
 	if err!=nil {
 		templates.ExecuteTemplate(w, "index.gohtml", nil)	
 	}else{
 	templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 	}
+}
+
+func getZoneInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	account:=shashankMongo.GetZone(connectDBInfo,"parking",vars["userID"])
+	templates.ExecuteTemplate(w, "zone.gohtml", account)
 }
 
 func byteToJsonInterface(load string) map[string]interface{} {
