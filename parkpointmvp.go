@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"net/http"
 	"encoding/json"
 	//"math"
@@ -46,6 +46,7 @@ func main(){
 	r.HandleFunc("/login/{userName}/{password}", loginAccount).Methods("POST")
 	r.HandleFunc("/overview/{userID}", loadOverview).Methods("POST")
 	r.HandleFunc("/zones/{userID}", loadZone).Methods("POST")
+	r.HandleFunc("/zone/assign/{UserID}", assignToZone).Methods("POST")
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -113,6 +114,25 @@ func loadOverview(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",vars["userID"])
 	templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
+}
+
+func assignToZone(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	
+	file, _, err := r.FormFile("xlsxFile")
+    if err != nil {
+        fmt.Println("Error Retrieving the File")
+        fmt.Println(err)
+        return
+    }
+	defer file.Close()
+	
+	deliveryArrUpdate,noOfDeliveryUpdate,userId:=middlework.UploadToExcel(file,connectDBInfo,"parking",vars["UserID"])
+	if(deliveryArrUpdate == 1 && noOfDeliveryUpdate == 1 && userId!= ""){
+		account:=shashankMongo.GetZone(connectDBInfo,"parking",userId)
+		templates.ExecuteTemplate(w, "zone.gohtml", account)
+	}
+
 }
 
 func byteToJsonInterface(load string) map[string]interface{} {

@@ -39,7 +39,7 @@ button {outline:none;}
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
     <form method="POST" action="/overview/{{ .UserID }}">
-    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</button>
+    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</button></form>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  New Assignment</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Live Tracking</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Profile</a>
@@ -78,12 +78,29 @@ button {outline:none;}
             <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
             <td>{{ .Name }}</td>
             <td>{{ .DeliveryInZone }}</td>
+            <td><button onclick="document.getElementById('{{ .UserID }}').style.display='block'" class="w3-button w3-blue">Assign</button></td>
+            <td><button>Empty</button></td>
           </tr>
         {{ end }}
         </table>
       </div>
     </div>
   </div>
+
+    {{ range .ZoneDetailInfo }}
+    <div id="{{ .UserID }}" class="w3-modal w3-white w3-round-xxlarge">
+    <div class="w3-modal-content w3-card-4">
+        <span onclick="document.getElementById('{{ .UserID }}').style.display='none'" class="w3-button w3-display-topright w3-red"><h4>&times;</h4></span>
+        <h2>Assign Deliveries to {{ .Name }}</h2>
+      <div class="w3-container">
+        <form enctype="multipart/form-data" method="POST" action="/zone/assign/{{ .UserID }}">
+        <p><input type="file" name="xlsxFile" /></p>
+        <p><button type="submit" class="w3-btn w3-blue w3-border w3-round-xxlarge"> Upload </button></p>
+        </form>
+      </div>
+    </div>
+  </div>
+  {{end}}
 
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-light-grey">
