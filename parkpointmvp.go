@@ -66,7 +66,9 @@ func createAccount(w http.ResponseWriter, r *http.Request){
 		"username":"`+vars["userName"]+`",
 		"businessname": "`+vars["businessName"]+`",
 		"password": "`+vars["password"]+`",
-		"city": "`+vars["city"]+`"
+		"city": "`+vars["city"]+`",
+		"deliveryPending":"0",
+		"deliveryDelivered":"0"
 		}`
 
 	loadToJson:=byteToJsonInterface(load)
