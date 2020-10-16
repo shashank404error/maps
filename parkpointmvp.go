@@ -129,8 +129,8 @@ func assignToZone(w http.ResponseWriter, r *http.Request) {
 	
 	deliveryArrUpdate,noOfDeliveryUpdate,userId:=middlework.UploadToExcel(file,connectDBInfo,"parking",vars["UserID"])
 	if(deliveryArrUpdate == 1 && noOfDeliveryUpdate == 1 && userId!= ""){
-		account:=shashankMongo.GetZone(connectDBInfo,"parking",userId)
-		templates.ExecuteTemplate(w, "zone.gohtml", account)
+		userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",userId)
+		templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 	}
 
 }
