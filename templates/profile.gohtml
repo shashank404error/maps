@@ -24,7 +24,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <img src="/static/images/bybMapWB.png" class="w3-margin-right" style="width:50px;height:50px;">
     </div>
     <div class="w3-col s8 w3-bar">
-      <span>Welcome, <strong>{{ .UserName }}</strong></span><br>
+      <span>Welcome, <strong><p id="uniqueUserName">{{ .UserName }}</p></strong></span><br>
       <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
       <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
       <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
@@ -56,7 +56,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
-    <h5><b><i class="fa fa-dashboard"></i> {{ .BusinessName }}, {{ .City }}</b></h5>
+    <h5><b><i class="fa fa-dashboard"></i> <p id="businessNameForWhatsapp">{{ .BusinessName }}, {{ .City }}</p></b></h5>
   </header>
 
   <div class="w3-row-padding w3-margin-bottom">
@@ -78,7 +78,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <div class="w3-container w3-blue w3-padding-16">
         <div class="w3-left"><i class="fa fa-clock-o w3-xxxlarge"></i></div>
         <div class="w3-right">
-          <h3>99</h3>
+          <h3>{{ .DeliveryPending }}</h3>
         </div>
         <div class="w3-clear"></div>
         <h4>Pending</h4>
@@ -88,7 +88,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <div class="w3-container w3-teal w3-padding-16">
         <div class="w3-left"><i class="fa fa-check w3-xxxlarge"></i></div>
         <div class="w3-right">
-          <h3>23</h3>
+          <h3>{{ .DeliveryDelivered }}</h3>
         </div>
         <div class="w3-clear"></div>
         <h4>Delivered</h4>
@@ -114,12 +114,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <table class="w3-table w3-striped w3-white">
           <tr>
             <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
-            <td>Your delivery url is - <a href="https://delivery.bybrisk.com/{{ .UserID }}">https://delivery.bybrisk.com/{{ .UserID }}</a></td>
+            <td>Your delivery url is - <a href="https://app.bybrisk.com/{{ .UserID }}">https://app.bybrisk.com/{{ .UserID }}</a></td>
             <td><i>10 mins</i></td>
           </tr>
           <tr>
             <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
-            <td>Database error.</td>
+            <td><button class="w3-border-0 w3-transparent" onclick="send_handle()" style="cursor:pointer;outline:none;">Contact Support <img src="/static/images/whatsappLogo.png" style="height:50px;width:80px;"></button></td>
             <td><i>15 mins</i></td>
           </tr>
           <tr>
@@ -183,6 +183,19 @@ function w3_open() {
 function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
+}
+
+function send_handle() {
+
+  let name=document.getElementById("uniqueUserName").textContent;
+  console.log(name);
+  let business= document.getElementById("businessNameForWhatsapp").textContent;
+  console.log(business);
+
+  //var win = window.open(`https://wa.me/${num}?text=I%27m%20api%20msg%20hello%20${name}%20friend%20${msg}`, '_blank');
+  var win = window.open(  "https://api.whatsapp.com/send?phone=919109600906&text=I%27m%20"+name+"%20from%20"+business+"%20and%20I%20need%20your%20assistance.%20Sent%20from%20map.bybrisk.com", "_blank");
+ // win.focus();
+  // window.location.href = "http://www.w3schools.com";
 }
 </script>
 
