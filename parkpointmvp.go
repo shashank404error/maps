@@ -12,6 +12,7 @@ import (
 	//"github.com/shashank404error/account"
 	"github.com/shashank404error/shashankMongo"
 	"github.com/shashank404error/middlework"
+	"go.mongodb.org/mongo-driver/bson"
 	"html/template"
 	"os"
 )
@@ -47,6 +48,7 @@ func main(){
 	r.HandleFunc("/overview/{userID}", loadOverview).Methods("POST")
 	r.HandleFunc("/zones/{userID}", loadZone).Methods("POST")
 	r.HandleFunc("/zone/assign/{UserID}", assignToZone).Methods("POST")
+	r.HandleFunc("/tracking/{UserID}", liveTracking).Methods("POST")
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -135,6 +137,25 @@ func assignToZone(w http.ResponseWriter, r *http.Request) {
 		templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 	}
 
+}
+
+func liveTracking(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	var deliveredDetails []shashankMongo.DeliveredDetail
+	var deliveredDetail shashankMongo.DeliveredDetail
+	documents:=shashankMongo.GetFieldByFilter (connectDBInfo, "delivered", "businessUid", vars["UserID"])
+
+	for _,val:= range documents{
+		bsonBytes, _ := bson.Marshal(val)
+		bson.Unmarshal(bsonBytes, &deliveredDetail)
+		deliveredDetails = append(deliveredDetails,deliveredDetail)	
+	} 
+	account:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts", vars["UserID"])
+	load:= shashankMongo.DeliveredAndAccount{
+		DeliveredDetails: deliveredDetails,
+		BusinessAccount: account,
+	}
+	templates.ExecuteTemplate(w, "pastorders.gohtml", load)
 }
 
 func byteToJsonInterface(load string) map[string]interface{} {
