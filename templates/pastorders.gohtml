@@ -61,9 +61,31 @@ button {outline:none;}
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+<div class="w3-main" style="width: 100%; height: 100%;margin-left:300px;margin-top:43px;">
 
-<div id='map' class="w3-border-0" style='width: 100%; height: 100%;z-index: 2;position: absolute;'></div>
+    <div id='map' class="w3-border-0" style='width: 100%; height: 100%;z-index: 2;position: absolute;'></div>
+
+    <centre><div style="z-index: 2;position: absolute;"><button id="displayMapButton" class="w3-button w3-blue" style="display:none;" onclick="displayMap()"> Map </button>
+    <button id="displayListButton" class="w3-button w3-blue" onclick="displayList()"> List </button></div></center>
+     <br><br>
+      <center><table class="w3-table w3-striped w3-hoverable" id="customerListDetail" style="display:none;">
+        <tr>
+          <th> ZoneID </th>
+          <th> Delivered On </th>
+          <th> Customer Name </th>
+          <th> Phone </th>       
+          <th> Address </th>
+        </tr>
+        {{range .DeliveredDetails}}
+          <tr>
+            <td> {{ .ZoneID }} </td>
+            <td> {{ .DateOfDelivery }} </td>
+            <td> {{ .CustomerName }} </td>
+            <td> {{ .CustomerMob }} </td>
+            <td> {{ .Address }} </td>
+          </tr>
+        {{end}}
+      </table></center>
 
     <ul id="latLongUL" style="display:none">
     {{range .DeliveredDetails}}
@@ -84,14 +106,6 @@ button {outline:none;}
     {{end}}
     </ul>
 
-  <centre><h1>Loading...</h1><h3 class="w3-text-blue">It may take few minutes</h3></center>
-
-
-  <!-- Footer -->
-  <footer class="w3-container w3-padding-16 w3-light-grey">
-    <h4>ADMIN</h4>
-    <p>Bybrisk Maps <a href="https:bybrisk.com" target="_blank">bybrisk</a></p>
-  </footer>
 
   <!-- End page content -->
 </div>
@@ -171,6 +185,23 @@ function w3_close() {
         // create the marker
         new mapboxgl.Marker(el).setLngLat(monuments[i]).setPopup(popup).addTo(map);
     }
+
+function displayMap() {
+    //document.getElementById("mapContainer").style.display="block";
+   // document.getElementById("map").style.height="100%";
+   // document.getElementById("map").style.widht="100%";
+    document.getElementById("customerListDetail").style.display="none";
+    document.getElementById("map").style.display="block";
+    document.getElementById("displayListButton").style.display="block";
+    document.getElementById("displayMapButton").style.display="none";
+}
+
+function displayList(){
+    document.getElementById("customerListDetail").style.display="block";
+    document.getElementById("map").style.display="none";
+    document.getElementById("displayListButton").style.display="none";
+    document.getElementById("displayMapButton").style.display="block";
+}
 
 </script>
 

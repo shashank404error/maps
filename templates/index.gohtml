@@ -27,7 +27,8 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
       <center><h3 class="w3-cell-bottom"><img src="/static/images/bybMapWB.png" style="width:100px;height:100px;"> Bybrisk Maps</h3></center>
     </div>
     <div class="w3-container w3-padding-16" id="signupComponent">
-      <form action="#" method="POST" id="createAccountForm" target="_blank" onSubmit="callCreateAccountAPI()">
+      <span id="signupErrorMessage" class="w3-text-red"></span>
+      <form action="#" method="POST" id="createAccountForm" target="_blank" onSubmit="callCreateAccountAPI()" autocomplete="off">
         <div class="w3-row-padding" style="margin:0 -16px;">
           <div class="w3-rest w3-margin-bottom">
             <label><i class="fa fa-child"></i> UserName</label>
@@ -37,7 +38,8 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
         <div class="w3-row-padding" style="margin:8px -16px;">
           <div class="w3-rest w3-margin-bottom">
             <label><i class="fa fa-lock"></i> Password</label>
-            <input class="w3-input w3-border" type="password" name="password" id="password" required>
+            <input class="w3-input w3-border" type="password" name="password" id="password" onInput="passwordValidation()" required>
+            <span id="passwordSuggestions" class="w3-text-red"></span>
           </div>
         </div>
         <div class="w3-row-padding" style="margin:8px -16px;">
@@ -65,7 +67,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
 
    <!-------------------login code below---------->
     <div class="w3-container w3-padding-16" id="loginComponent" style="display:none;">
-      <form action="#" method="POST" id="loginAccountForm" target="_blank" onSubmit="callLoginAccountAPI()">
+      <form action="#" method="POST" id="loginAccountForm" target="_blank" onSubmit="callLoginAccountAPI()" autocomplete="off">
         <div class="w3-row-padding" style="margin:0 -16px;">
           <div class="w3-rest w3-margin-bottom">
             <label><i class="fa fa-child"></i> UserName</label>
@@ -172,12 +174,18 @@ With intent to change the face of the hyperlocal market, Bybrisk has created eff
 
 <script>
 function callCreateAccountAPI(){
-    var oForm = document.getElementById("createAccountForm");
-    var userName = document.getElementById("username").value;
-    var businessName = document.getElementById("businessName").value;
-    var password = document.getElementById("password").value;
-    var city = document.getElementById("citySelect").value;
-    oForm.action = "/create/account/"+userName+"/"+businessName+"/"+password+"/"+city;
+    document.getElementById("signupErrorMessage").innerHTML="";
+    if(document.getElementById("passwordSuggestions").textContent==""){
+        var oForm = document.getElementById("createAccountForm");
+        var userName = document.getElementById("username").value;
+        var businessName = document.getElementById("businessName").value;
+        var password = document.getElementById("password").value;
+        var city = document.getElementById("citySelect").value;
+        oForm.action = "/create/account/"+userName+"/"+businessName+"/"+password+"/"+city;
+    }
+    else{
+        document.getElementById("signupErrorMessage").innerHTML="Please correct the error before registration!";
+    }
   }
 
 function callLoginAccountAPI(){
@@ -196,6 +204,18 @@ function signupComponent(){
   document.getElementById("loginComponent").style.display="none";
   document.getElementById("signupComponent").style.display="block";
 }
+
+function passwordValidation() {
+    document.getElementById("passwordSuggestions").innerHTML="";
+    var edValue = document.getElementById("password").value;
+    if(edValue.length<8){
+      var textnode = document.createTextNode("Password must have atleast 8 characters.");         // Create a text node
+      document.getElementById("passwordSuggestions").appendChild(textnode);
+    }
+
+  
+}
+
 
 </script>
 

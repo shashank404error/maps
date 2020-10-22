@@ -27,7 +27,7 @@ var templates *template.Template
 func determineListenAddress() (string, error) {
 	port := os.Getenv("PORT")
 	if port == ""{
-	  port = "8000"
+	  port = "80"
 	}
 	return ":" + port, nil
   }
@@ -102,7 +102,8 @@ func loginAccount(w http.ResponseWriter, r *http.Request){
 	password:=vars["password"]
 	userConfig,err := shashankMongo.FetchLogin(connectDBInfo,"businessAccounts",username,password)
 	if err!=nil {
-		templates.ExecuteTemplate(w, "index.gohtml", nil)	
+		error:="Username and password donot match! Please close this tab and try again."
+		templates.ExecuteTemplate(w, "error.gohtml", error)	
 	}else{
 	templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 	}
