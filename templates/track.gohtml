@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<title>Tracking - {{ .BusinessName }}, {{ .City }}Bybrisk Maps</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+button {outline:none;}
+
+</style>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <span class="w3-bar-item w3-right">Bybrisk Maps</span>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s4">
+      <img src="/static/images/bybMapWB.png" class="w3-margin-right" style="width:50px;height:50px;">
+    </div>
+    <div class="w3-col s8 w3-bar">
+      <span>hello, <strong>{{ .UserName }}</strong></span><br>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+    
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+   
+    <form method="POST" action="/overview/{{ .UserID }}">
+    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</button></form>
+    
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  New Assignment</a>
+    
+    <form method="POST" action="/tracking/{{ .UserID }}">
+    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Delivered</button></form>
+
+    <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-bullseye fa-fw"></i>  Live Tracking</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Profile</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Delivery Settings</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  Sudden Zone</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bank fa-fw"></i>  Upgrade Plan</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  Analytics</a><br><br>
+  </div>
+</nav>
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+  
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+    <div class="w3-main w3-content w3-center" style="height:100%;width:100%;max-width:1500px;z-index: 2;position: absolute;">
+        <div id='map' class="w3-border-0" style='width: 100%; height: 100%;z-index: 2;position: absolute;'></div>
+    </div>
+</div>
+
+<ul id="channelName" style="display:none">
+    {{range .ProfileConfig.ZoneID}}
+        <li>{{ . }}</li>
+    {{end}}
+</ul>
+<p id="userNameChannel" style="display:none">{{ .UserName }}</p>
+
+<script>
+// Script to open and close sidebar
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+}
+ 
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+}
+
+</script>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.21.7.min.js"></script>
+
+<script>
+    var lat = null;
+    var lng = null;
+    var usernameChannel = document.getElementById("userNameChannel").textContent;
+//    var channelName = document.getElementById("channelName").textContent;
+
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhc2hhbmstcHJha2FzaCIsImEiOiJja2ZjZzJmOGsxN3kxMnRvNXp1MDJxcGFzIn0.69B3TiOom1WXyot_FdTVHA';
+    var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    zoom: 10,
+    center: [77.493497,23.233982]
+    });
+
+    const uuid = PubNub.generateUUID();
+    const pubnub = new PubNub({
+     publishKey: "pub-c-47432348-8fb8-4209-a8d6-e9978a27097e",
+     subscribeKey: "sub-c-dca09b78-0946-11eb-a684-166a9baec35a",
+     uuid: uuid
+    });
+
+    let eleOfChannel = document.getElementById('channelName');
+    children = eleOfChannel.children;
+    //var arrOfChannel = new Array();
+    var keyValueMarker = new Array();
+    var keyValuePopup = new Array();
+    var agentName = new Array();
+    for(j = 0;j<children.length; j++){
+
+        keyValueMarker[usernameChannel+children[j].textContent]=new mapboxgl.Marker({ "color": "#b40219"}).setLngLat([0,0]).addTo(map);
+        keyValuePopup[usernameChannel+children[j].textContent] = new mapboxgl.Popup({ offset: 25 }).setHTML('<font color="black">Idle</font>');
+        agentName[usernameChannel+children[j].textContent] = children[j].textContent;
+        uniqueChannelName = usernameChannel+children[j].textContent;
+        pubnub.subscribe({
+        channels: [uniqueChannelName],
+        withPresence: true  
+        });
+
+        pubnub.addListener({
+            message: function(event) {
+                console.log(event.message)
+                    lat = event.message['lat'];
+                    lng = event.message['lng'];
+                    currChannelName = event.message['channel'];
+                    keyValueMarker[currChannelName].setLngLat([lng, lat]).setPopup(keyValuePopup[currChannelName].setHTML('<font color="black">'+agentName[currChannelName]+'</font>')).addTo(map);
+                    },
+            presence: function(event) {
+                console.log("pubnub connected");
+                }
+        });
+
+        //arrOfChannel.push(usernameChannel+children[j].textContent);
+        //keyValueMarker[children[j].textContent]=new mapboxgl.Marker({ "color": "#b40219"}).setLngLat([0,0]).addTo(map);
+        //keyValuePopup[children[j].textContent] = new mapboxgl.Popup({ offset: 25 }).setHTML('<font color="black">Idle</font>');
+    }
+    //console.log(arrOfChannel);
+
+    /*pubnub.subscribe({
+	  channels: arrOfChannel,
+      withPresence: true
+	    
+    });
+
+    //marker6.setLngLat([lng, lat]).setPopup(popup6.setHTML('<font color="black">'+agentName+'</font>')).addTo(map);
+    
+    pubnub.addListener({
+       message: function(event) {
+          console.log(event.message)
+	    	  lat = event.message.['lat'];
+	    	  lng = event.message.['lng'];
+              marker6.setLngLat([lng, lat]).setPopup(popup6.setHTML('<font color="black">'+agentName+'</font>')).addTo(map);
+            },
+       presence: function(event) {
+          console.log("pubnub connected");
+    }
+  });*/
+
+</script>
+
+</body>
+</html>

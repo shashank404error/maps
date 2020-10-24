@@ -56,11 +56,10 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/rogpeppe/go-internal v1.1.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.2.2/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
-github.com/shashank404error/middlework v0.0.0-20201019113928-f351bc471e63 h1:nYr8LPHTOVHwqb5TsO6XU67IeOBXAT3Cw0DWaQCfyxQ=
-github.com/shashank404error/middlework v0.0.0-20201019113928-f351bc471e63/go.mod h1:z3o4woC2qaAo82mLu36YLqLE9kteRjq9U/EGM/owViU=
-github.com/shashank404error/shashankMongo v0.0.0-20201016141120-fddc5ffe3d37/go.mod h1:n/EOeixzs2xF8ViCfHjz1AK2uxVSE7u+9ussh9yCwBM=
-github.com/shashank404error/shashankMongo v0.0.0-20201021180622-597d8460c143 h1:qc0T3AfPa49qVTJJiijVXmJNe4vc4j4IyLL0s8gAuPg=
-github.com/shashank404error/shashankMongo v0.0.0-20201021180622-597d8460c143/go.mod h1:n/EOeixzs2xF8ViCfHjz1AK2uxVSE7u+9ussh9yCwBM=
+github.com/shashank404error/middlework v0.0.0-20201023154635-d95c09721747 h1:b7QdN1sKs0lHEawkidvYYeHNSXsrIgjqMWiUjiSTU18=
+github.com/shashank404error/middlework v0.0.0-20201023154635-d95c09721747/go.mod h1:804bbOLnmDrmuW4/FjQovi5TU3GoAFo0cJAdTCL8Hyc=
+github.com/shashank404error/shashankMongo v0.0.0-20201023145653-8754a90b81a2 h1:HZJqeACfmq8ISQU7cFc1bldGPNFNryT72E9mg+22tEw=
+github.com/shashank404error/shashankMongo v0.0.0-20201023145653-8754a90b81a2/go.mod h1:n/EOeixzs2xF8ViCfHjz1AK2uxVSE7u+9ussh9yCwBM=
 github.com/sirupsen/logrus v1.4.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=

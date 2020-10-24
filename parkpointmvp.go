@@ -49,6 +49,8 @@ func main(){
 	r.HandleFunc("/zones/{userID}", loadZone).Methods("POST")
 	r.HandleFunc("/zone/assign/{UserID}", assignToZone).Methods("POST")
 	r.HandleFunc("/tracking/{UserID}", liveTracking).Methods("POST")
+	r.HandleFunc("/liveTracking/{UserID}", getLiveLocation).Methods("POST")
+	
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",fs))
 	http.Handle("/",r)
@@ -90,7 +92,7 @@ func createProfile(w http.ResponseWriter, r *http.Request){
 		profileRes := shashankMongo.UpdateProfileConfiguration(connectDBInfo,"businessAccounts",vars["userID"],config)
 		middlework.CreateZones(connectDBInfo,"parking",vars["userID"],config)
 		if(profileRes==1) {
-			userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",vars["userID"])
+			userConfig:=shashankMongo.FetchProfile(connectDBInfo,"businessAccounts",vars["userID"])		
 			templates.ExecuteTemplate(w, "profile.gohtml", userConfig)
 		}
 	}
@@ -157,6 +159,12 @@ func liveTracking(w http.ResponseWriter, r *http.Request){
 		BusinessAccount: account,
 	}
 	templates.ExecuteTemplate(w, "pastorders.gohtml", load)
+}
+
+func getLiveLocation(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	profile:=shashankMongo.FetchProfile(connectDBInfo, "businessAccounts", vars["UserID"])
+	templates.ExecuteTemplate(w, "track.gohtml", profile)
 }
 
 func byteToJsonInterface(load string) map[string]interface{} {

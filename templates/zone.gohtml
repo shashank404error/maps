@@ -38,6 +38,7 @@ button {outline:none;}
   </div>
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    
     <form method="POST" action="/overview/{{ .UserID }}">
     <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Overview</button></form>
     
@@ -46,7 +47,9 @@ button {outline:none;}
     <form method="POST" action="/tracking/{{ .UserID }}">
     <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Delivered</button></form>
 
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Live Tracking</a>
+    <form method="POST" action="/liveTracking/{{ .UserID }}">
+    <button type="submit" class="w3-bar-item w3-transparent w3-border-0 w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Live Tracking</button></form>
+
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Profile</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Delivery Settings</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  Sudden Zone</a>
